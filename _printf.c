@@ -1,51 +1,48 @@
 #include "main.h"
 
 /**
- * _printf - prints and input into the standard output
- * @format: the format string
- * Return: number of bytes printed
+ * _printf - prints output according to a format
+ * @format: format string containing the characters and specifiers
+ * Description: this function calls get_print() function which
+ * will determine which printing function to call depending on conversion
+ * specifiers contained into the format
+ * Return: length of the formatted output string
  */
 
-int _printf(const char *format, ...)
-
+int _print(const char *format, ...)
 {
-	int sum = 0;
-	va_list ap;
-	char *p, *start;
+int (*pfunc)(va_list, flags_t *);
+const char *p;
+va_list arguments;
+flags_t flags = {0, 0, 0};
+register int count = 0;
 
-	params_t params = PARAMS_INIT;
-
-	va_start(ap, format);
-
-	if (!format || (format[0] == '%' && !format[1]))/* checking for NULL char */
-		return (-1);
-	if (format[0] == '%' && format[1] == ' ' && !format[2])
-		return (-1);
-	for (p = (char *)format; *p; p++)
-	{
-		init_params(&params, ap);
-		if (*p != '%')/*checking for the % specifier*/
-		{
-			sum += _putchar(*p);
-			continue;
-		}
-		start = p;
-		p++;
-		while (get_flag(p, &params)) /* while char at p is flag character */
-		{
-			p++; /* next character */
-		}
-		p = get_width(p, &params, ap);
-		p = get_precision(p, &params, ap);
-		if (get_modifier(p, &params))
-			p++;
-		if (!get_specifier(p))
-			sum += print_from_to(start, p,
-					params.l_modifier || params.h_modifier ? p - 1 : 0);
-		else
-			sum += get_print_func(p, ap, &params);
-	}
-	_putchar(BUF_FLUSH);
-	va_end(ap);
-	return (sum);
+va_start(arguments, format);
+if (!format ||  (format[0] == '%' && !format[1]))
+return (-1);
+if (format[0] == '%' && format[1] == ' ' && !format[2])
+return (-1);
+for (p = format; *p; p++)
+{
+if (*p == '%')
+{
+p++;
+if (*p == '%')
+{
+count += _putchar('%');
+continue;
+}
+while (get_flag(*p, &flags))
+p++;
+pfunc = get_print(*p);
+count += (pfunc)
+? pfunc(arguments, &flags)
+: _printf("%%c", *p);
+}
+else
+count += _putchar(*p);
+}
+_putchar(-1);
+va_end(arguments);
+return (count);
 }
