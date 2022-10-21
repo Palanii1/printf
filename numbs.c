@@ -1,7 +1,7 @@
 #include "main.h"
 
 /**
- * convert - converter function, a clone of itoa
+ * convert - to converter function, a clone of itoa
  * @num: number
  * @base: base
  * @flags: argument flags
@@ -38,7 +38,7 @@ char *convert(long int num, int base, int flags, params_t *params)
 }
 
 /**
- * print_unsigned - prints unsigned integer numbers
+ * print_unsigned - to print unsigned integer numbers
  * @ap: argument pointer
  * @params: the parameters struct
  *
